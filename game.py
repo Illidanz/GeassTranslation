@@ -1,3 +1,4 @@
+import math
 import os
 from hacktools import common, nitro
 
@@ -30,10 +31,10 @@ def readImage(infolder, file, extension):
     if extension == ".chr":
         image = nitro.NCGR()
         image.tiles = []
-        image.bpp = 8 if len(palettes[0]) == 256 else 4
+        image.bpp = 8 if len(palettes[0]) > 16 else 4
         image.tilesize = 8
         with common.Stream(infolder + file, "rb") as f:
-            image.tilelen = f.readUInt()
+            image.tilelen = f.readUInt() - 4
             try:
                 last3 = int(file[-7:-4])
             except ValueError:
@@ -47,9 +48,15 @@ def readImage(infolder, file, extension):
             elif "au_bg" in file and last3 >= 606 and last3 < 626:
                 image.width = 256
                 image.height = 200
-            else:
+            elif "au_bg" in file:
                 image.width = 272
                 image.height = 216
+            else:
+                if "chiba/status/bg/pilot" in file or "ohshima/bg/status" in file:
+                    image.width = 80
+                else:
+                    image.width = 256
+                image.height = math.floor(image.tilelen / (64 if image.bpp == 8 else 32) / (image.width / 8)) * 8
             tiledata = f.read(image.tilelen)
             nitro.readNCGRTiles(image, tiledata)
         return palettes, image, None, None, image.width, image.height, mapfile, cellfile
@@ -68,3 +75,12 @@ def readImage(infolder, file, extension):
     if os.path.isfile(infolder + cellfile):
         cell = nitro.readNCER(infolder + cellfile)
     return palettes, image, map, cell, width, height, mapfile, cellfile
+
+
+def readShiftJIS(f, encoding="shift_jis"):
+    try:
+        ret = common.detectEncodedString(f, encoding)
+    except:
+        return ""
+    ret = ret.replace("\\n", "|")
+    return ret

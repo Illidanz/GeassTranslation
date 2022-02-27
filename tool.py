@@ -37,14 +37,21 @@ def extract(rom, narc, img, db, script):
                     decomp = nds.decompress(f, complength)
                     with common.Stream(infolder + "data/" + file.replace(".bin", ".narc"), "wb") as f:
                         f.write(decomp)
+        for file in common.showProgress(common.getFiles(infolder, [".ncgc", ".ncbc", ".chrc", ".texc", ".scrc", ".palc"])):
+            complength = os.path.getsize(infolder + file)
+            with common.Stream(infolder + file, "rb") as f:
+                decomp = nds.decompress(f, complength)
+                outfile = file.replace(".ncgc", ".ncgr").replace(".ncbc", ".ncgr").replace(".chrc", ".chr").replace(".texc", ".tex").replace(".scrc", ".scr").replace(".palc", ".pal")
+                with common.Stream(infolder + outfile, "wb") as f:
+                    f.write(decomp)
         common.logMessage("Done!")
     if all or narc:
         common.logMessage("Decompressing archives ...")
         common.makeFolder(data + "extract_NARC/")
         for file in common.showProgress(common.getFiles(infolder + "data/", ".narc")):
-            outfolder = data + "extract_NARC/" + file.replace(".narc", "")
-            common.makeFolders(outfolder)
-            nitro.extractNARCFile(infolder + "data/" + file, outfolder)
+            narcout = data + "extract_NARC/" + file.replace(".narc", "")
+            common.makeFolders(narcout)
+            nitro.extractNARCFile(infolder + "data/" + file, narcout)
         common.logMessage("Done!")
     if all or img:
         nitro.extractIMG(infolder + "data/", data + "out_IMG/", [".NCGR", ".ncgr", ".chr"], readfunc=game.readImage)

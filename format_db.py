@@ -1,4 +1,5 @@
 import codecs
+import game
 from hacktools import common
 
 
@@ -60,13 +61,9 @@ def extract(data):
                         stroffs += [0x18, 0x58, 0x98, 0xd8, 0x118, 0x158, 0x198, 0x1d8, 0x218, 0x258, 0x298, 0x2d8, 0x318, 0x358, 0x398]
                     for stroff in stroffs:
                         f.seek(startoff + datalen * i + stroff)
-                        dbstr = readShiftJIS(f)
+                        dbstr = game.readShiftJIS(f)
                         if len(dbstr) > 1 and dbstr.endswith("|"):
                             dbstr = dbstr[:-1]
                         if dbstr != "":
                             out.write(dbstr + "=\n")
     common.logMessage("Done!")
-
-
-def readShiftJIS(f):
-    return common.detectEncodedString(f, "shift_jis")
