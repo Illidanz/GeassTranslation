@@ -3,7 +3,7 @@ import click
 import game
 from hacktools import common, nds, nitro
 
-version = "0.1.0"
+version = "0.2.0"
 data = "GeassData/"
 romfile = data + "geass.nds"
 rompatch = data + "geass_patched.nds"
