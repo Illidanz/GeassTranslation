@@ -3,9 +3,9 @@ import click
 import game
 from hacktools import common, nds, nitro
 
-version = "0.2.0"
+version = "0.3.0"
 data = "GeassData/"
-romfile = data + "geass.nds"
+romfile = "geass.nds"
 rompatch = data + "geass_patched.nds"
 bannerfile = data + "repack/banner.bin"
 patchfile = data + "patch.xdelta"
@@ -65,7 +65,7 @@ def extract(rom, narc, img, db, script):
 
 
 @common.cli.command()
-@click.option("--no-rom", is_flag=True, default=False)
+@click.option("--no-rom", is_flag=True, default=False, hidden=True)
 def repack(no_rom):
     all = True  # not sub and not dat and not bin and not img and not wsb
     if not no_rom:
@@ -74,12 +74,18 @@ def repack(no_rom):
         # nds.editBannerTitle(bannerfile, "Something")
         nds.repackRom(romfile, rompatch, outfolder, patchfile)
 
+
+@common.cli.command(hidden=True)
+def merge():
+    tfile = data + "out_translations/script-ja-JP.xliff"
+    t = common.TranslationFile(tfile)
+    t.mergeSection(data + "script_input.txt")
+    t.save(tfile.replace("ja-JP", "en-US"))
+    tfile = data + "out_translations/db-ja-JP.xliff"
+    t = common.TranslationFile(tfile)
+    t.mergeSection(data + "db_input.txt")
+    t.save(tfile.replace("ja-JP", "en-US"))
+
+
 if __name__ == "__main__":
-    click.echo("GeassTranslation version " + version)
-    if not os.path.isdir(data):
-        common.logError(data, "folder not found.")
-        quit()
-    if not os.path.isfile(romfile):
-        common.logError(romfile, "file not found.")
-        quit()
-    common.runCLI(common.cli)
+    common.setupTool("GeassTranslation", version, data, romfile, 0xbf893742)

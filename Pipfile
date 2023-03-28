@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-hacktools = {extras = ["graphics", "nds", "xdelta"], version = "*"}
+hacktools = {extras = ["cli", "graphics", "nds", "xdelta"], version = "*"}
 
 [dev-packages]
 

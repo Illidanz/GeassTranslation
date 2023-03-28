@@ -1,7 +1,8 @@
 __pycache__
-
-build
-GeassData
+.DS_Store
 *.log
-*.exe
+GeassData
+dataold
+*.nds
+*.sav
 notes.md
